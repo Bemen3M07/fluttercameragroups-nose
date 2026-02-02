@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Afegeix aquestes tres:
+  camera: ^0.10.5 # Per gestionar la càmera
+  path_provider: ^2.1.1 # Per trobar rutes de fitxers
+  audioplayers: ^5.1.0 # Per reproduir àudio
 
 dev_dependencies:
   flutter_test:
