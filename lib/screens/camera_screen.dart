@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:gal/gal.dart';
 import '../main.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -73,29 +74,33 @@ class _CameraScreenState extends State<CameraScreen> {
 
     try {
       final XFile image = await _controller!.takePicture();
-      final File file = File(image.path);
 
-      // Enviem la foto a la Home per a la pestanya "Foto"
+      // --- LÒGICA EXERCICI 2: GUARDAR A LA GALERIA ---
+      // Guardem la imatge a la galeria del telèfon
+      await Gal.putImage(image.path);
+      // ----------------------------------------------
+
+      final File file = File(image.path);
       widget.onImageCaptured(file);
 
-      // Mostrem l'Alert Dialog que demana l'exercici
       if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Imatge capturada'),
-            content: Text('S\'ha emmagatzemat a:\n${image.path}'),
+            title: const Text('Guardat permanent'),
+            content:
+                Text('La foto s\'ha desat a la Galeria i a:\n${image.path}'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('D\'acord'),
+                child: const Text('Perfecte'),
               ),
             ],
           ),
         );
       }
     } catch (e) {
-      print("Error en fer la foto: $e");
+      print("Error desant la foto: $e");
     }
   }
 

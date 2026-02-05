@@ -12,6 +12,7 @@ dependencies:
   # Afegeix aquestes tres:
   camera: ^0.10.5 # Per gestionar la càmera
   path_provider: ^2.1.1 # Per trobar rutes de fitxers
+  gal: ^2.1.0
   audioplayers: ^5.1.0 # Per reproduir àudio
 
 dev_dependencies:
@@ -21,3 +22,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/himnoperu.mp3
