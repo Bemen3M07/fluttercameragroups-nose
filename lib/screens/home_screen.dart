@@ -13,16 +13,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  File? _lastImage; // Variable d'estat per guardar la foto
 
-  // Funció que passarem a la CameraScreen per rebre la foto
+  // SOLUCIÓ 1: Canviem de 'File?' a 'List<File>' per guardar moltes fotos
+  final List<File> _gallery = [];
+
+  // La funció ara AFEGEIX a la llista, no sobreescriu
   void _updateImage(File image) {
     setState(() {
-      _lastImage = image;
+      _gallery.add(image);
     });
   }
 
-  static const List<String> _titles = ['Càmara', 'Foto', 'Multimèdia'];
+  static const List<String> _titles = ['Càmera', 'Galeria', 'Multimèdia'];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,10 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Definim les pantalles aquí per passar els paràmetres necessaris
     final List<Widget> pages = [
-      CameraScreen(onImageCaptured: _updateImage), // Passem la funció callback
-      PhotoScreen(image: _lastImage), // Passem la imatge
+      CameraScreen(onImageCaptured: _updateImage),
+      // Passem la LLISTA sencera a la pantalla de galeria
+      PhotoScreen(galleryImages: _gallery),
       const AudioScreen(),
     ];
 
@@ -46,16 +48,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt), label: 'Càmara'),
-          BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Foto'),
+            icon: Icon(Icons.camera_alt),
+            label: 'Càmera',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.audiotrack), label: 'Música'),
+            icon: Icon(Icons.photo_library),
+            label: 'Galeria',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.music_note),
+            label: 'Multimèdia',
+          ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple,
-        onTap: _onItemTapped,
       ),
     );
   }

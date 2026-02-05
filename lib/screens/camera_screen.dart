@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:gal/gal.dart';
-import '../main.dart';
+import '../main.dart'; // Assegura't que aquí és on tens la variable global 'cameras'
 
 class CameraScreen extends StatefulWidget {
   final Function(File) onImageCaptured;
@@ -44,7 +44,7 @@ class _CameraScreenState extends State<CameraScreen> {
       if (!mounted) return;
       setState(() {});
     } catch (e) {
-      print("Error inicialitzant la càmara: $e");
+      debugPrint("Error inicialitzant la càmera: $e");
     }
   }
 
@@ -64,26 +64,33 @@ class _CameraScreenState extends State<CameraScreen> {
   // FUNCIONALITAT: Canviar entre càmera frontal i trasera
   void _switchCamera() {
     if (cameras.length < 2) return;
-    _selectedCameraIndex = (_selectedCameraIndex == 0) ? 1 : 0;
+    setState(() {
+      _selectedCameraIndex = (_selectedCameraIndex == 0) ? 1 : 0;
+    });
     _initCamera(_selectedCameraIndex);
   }
 
-  // FUNCIONALITAT: Capturar foto i mostrar Alert
+  // FUNCIONALITAT: Capturar foto, guardar a Galeria i mostrar Alert
   Future<void> _takePicture() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
     try {
+      // 1. Fem la foto
       final XFile image = await _controller!.takePicture();
 
       // --- LÒGICA EXERCICI 2: GUARDAR A LA GALERIA ---
-      // Guardem la imatge a la galeria del telèfon
+      // Guardem la imatge a la galeria pública del telèfon
+      // Nota: Això demanarà permisos si és el primer cop
       await Gal.putImage(image.path);
       // ----------------------------------------------
 
       final File file = File(image.path);
+
+      // Passem la foto a la pantalla principal per a que la vegi la pestanya 'Galeria'
       widget.onImageCaptured(file);
 
       if (mounted) {
+        // Mostrem el missatge de confirmació
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -100,7 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
         );
       }
     } catch (e) {
-      print("Error desant la foto: $e");
+      debugPrint("Error desant la foto: $e");
     }
   }
 
@@ -124,7 +131,7 @@ class _CameraScreenState extends State<CameraScreen> {
           child: CameraPreview(_controller!),
         ),
 
-        // 2. El Menú Diferenciat (com demana l'enunciat)
+        // 2. El Menú Diferenciat
         Positioned(
           bottom: 30,
           left: 0,
@@ -157,7 +164,8 @@ class _CameraScreenState extends State<CameraScreen> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.camera_alt, size: 40),
+                    child: const Icon(Icons.camera_alt,
+                        size: 40, color: Colors.black),
                   ),
                 ),
                 // Botó Canvi Càmera
